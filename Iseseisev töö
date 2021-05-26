@@ -1,0 +1,71 @@
+Mis on Dependencye Injection?
+Tarkvaratehnikas on sõltuvuse süstimine tehnika, milles objekt võtab vastu muid objekte, millest ta sõltub.
+Neid muid objekte nimetatakse sõltuvusteks. Tüüpilises "kasutuses" -suhtes nimetatakse vastuvõttevat objekti kliendiks ja läbitud (st "sisestatud") objekti teenuseks.
+
+
+Kuhu classi kirjutad dependency Injectioni koodi ja mis meetodi alla?
+Kliendiklass: kliendiklass (sõltuv klass) on klass, mis sõltub teenindusklassist.
+Konstruktori sissepritsimine: Konstruktori sissepritse korral osutab pihusti teenust (sõltuvus) kliendiklassi konstruktori kaudu.
+
+Teenindusklass: teenuseklass (sõltuvus) on klass, mis pakub teenust kliendiklassile.
+Vara süstimine: Vara süstimisel (teise nimega Setter Injection) varustab injektor sõltuvust kliendiklassi avaliku vara kaudu.
+
+Injektoriklass: injektoriklass süstib teenindusklassi objekti kliendiklassi.
+Meetodi süstimine: seda tüüpi süstimisel rakendab kliendiklass liidest, mis deklareerib sõltuvuse edastamiseks meetodi (d)
+ja injektor kasutab seda liidest kliendiklassile sõltuvuse edastamiseks.
+
+Dependency Injectioni koodinäide tuua välja.
+
+using System.Web.Mvc;
+
+namespace WebTrainingRoom.Controllers
+{
+    public class UserController : Controller
+    {
+        IOfficeEvent _officeSerice;
+
+        public UserController(IOfficeEvent officeSercice)
+        {
+                _officeSerice = officeSercice;
+        }
+
+
+        public ActionResult Index()
+        {
+             _officeSerice.Execute();
+             
+            return View();
+        }
+    }
+}
+
+
+Mis tähendab AddSingelton?
+Singleton: teenuse objekt luuakse esmakordsel juurdepääsul, kõik järgnevad taotlused kasutavad sama varem loodud teenuse objekti.
+
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddSingleton<ICounter, RandomCounter>();
+    services.AddSingleton<CounterService>();
+}
+
+Mis tähendab AddTransient?
+Ajutine: iga kord, kui teenusele juurde pääsete, luuakse uus teenuse objekt. Ühe päringu ajal võib teenusele olla vastavalt mitu kõnet, 
+iga kõnega luuakse uus objekt. See olelusringi mudel sobib kõige paremini kergete teenuste jaoks, mis ei salvesta olekuandmeid.
+
+
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddTransient<ICounter, RandomCounter>();
+    services.AddTransient<CounterService>();
+}
+
+Mis tähendab AddScoped?
+Reguleerimisala: iga päringu jaoks luuakse eraldi teenuse objekt. See tähendab, et kui ühe taotluse ajal on mitu kõnet samale teenusele,
+siis kasutatakse kõigi nende kõnede jaoks sama teenuse objekti.
+
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddScoped<ICounter, RandomCounter>();
+    services.AddScoped<CounterService>();
+}
